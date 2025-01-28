@@ -1,12 +1,14 @@
 
 ExtraFiles/Scripts/AppleSUCatalog.sucatalog
 CMPackager.prefs
+tmp*
 
 # Ignore Recipes Folder
-Recipes/*
-
+#Recipes/*
 # Ignore vscode
 .vscode/*
+# Ignore logs Folder
+logs/*
 
 # Except for the Template.xml
 !Recipes/Template.xml

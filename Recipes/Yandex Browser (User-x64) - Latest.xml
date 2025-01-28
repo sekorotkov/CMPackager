@@ -1,0 +1,103 @@
+﻿<ApplicationDef>
+	<Application>
+		<Name>Yandex Browser (User-x64)</Name>
+		<Description>The quick and secure browser from Yandex.</Description>
+		<LocalizedName>Yandex Browser (User-x64)</LocalizedName>
+		<Publisher>Yandex</Publisher>
+		<AdminDescription>CMPackager build</AdminDescription>
+		<AutoInstall>True</AutoInstall>
+		<UserDocumentation>https://yandex.ru/support/browser/</UserDocumentation>
+		<OptionalReference>https://yndx-infrawin.gitlab.yandexcloud.net/INFRAWIN/infrawin_automation_scripts/-/tree/master/SCCM/CMPackager/Recipes</OptionalReference>
+		<!-- LinkText - [String] Specifies a description that appears in the Application Catalog with a hyperlink to additional information or documentation for the application. -->
+		<!-- PrivacyUrl - [String] Hyperlink, in URI format, to privacy information about the application. -->
+		<!-- Owner - [String] Owner for Application -->
+		<!-- SupportContact - [String] Support Contact for Application -->
+		<Icon>YandexBrowser.png</Icon>
+		<!-- AdminCategories - [String] Comma Delimited Categories in the Console -->
+		<!-- UserCategories - [String] Comma Delimited Categories for Software Center -->
+		<Keywords>browser;yabro;internet;ЯБро;браузер</Keywords>
+		<!-- FeaturedApplication - [Boolean] Display as a Featured Application and Hightlight in the Company Portal -->
+		<!-- DisplaySupersedence - [Boolean] Allows Users to See Deployments Superceded Appplications in Software Center -->
+		<FolderPath>CMPackager</FolderPath>
+		<FilterFolderPath>True</FilterFolderPath> <!-- FilterFolderPath - [Boolean] Search/Update/Supersiding application only in FolderPath folder -->
+		<FullName/>
+		<LatestName>Yandex Browser (User-x64) - Latest</LatestName><!-- LatestName - [String] The name of the application for which we will replace the deployment type with the new version. -->
+	</Application>
+	<Downloads>
+		<Download DeploymentType="DeploymentType1">
+			<PrefetchScript>
+				$Link = &quot;https://browser.yandex.ru/download/distribinfo?full=1&amp;bitness=64&amp;os=win&quot;
+				$JSON = Invoke-RestMethod -Uri $Link -UserAgent &apos;Mozilla/5.0 (Windows NT 10.0; Win64; x64)&apos;
+				$Download.Version = $JSON.yandex_version
+			</PrefetchScript>
+			<URL>https://browser.yandex.ru/download?full=1&amp;bitness=64&amp;os=win</URL>
+			<DownloadFileName>Yandex.exe</DownloadFileName>
+			<Version/>
+			<FullVersion/>
+			<DownloadVersionCheck>[string]$Version = ((Get-Item $TempDir\$DownloadFileName).VersionInfo.FileVersion).Trim()</DownloadVersionCheck>
+			<!--<AppRepoFolder>x64</AppRepoFolder>-->
+			<ExtraCopyFunctions/>
+			<RequireHigherVersion>True</RequireHigherVersion>
+		</Download>
+	</Downloads>
+	<DeploymentTypes>
+		<DeploymentType Name="DeploymentType1">
+			<DeploymentTypeName>Yandex Browser (x64) user level</DeploymentTypeName>
+			<InstallationType>Script</InstallationType>
+			<Comments>Silent Installer for user</Comments>
+			<!--<Language>English</Language>-->
+			<CacheContent>False</CacheContent>
+			<BranchCache>True</BranchCache>
+			<ContentFallback>True</ContentFallback>
+			<OnSlowNetwork>Download</OnSlowNetwork>
+			<InstallProgram>&quot;Yandex.exe&quot; --silent --codezero --do-not-launch-browser</InstallProgram>
+			<UninstallCmd>&quot;%LOCALAPPDATA%\Yandex\YandexBrowser\Application\$Version\Installer\setup.exe&quot; --uninstall --force-uninstall --codezero</UninstallCmd>
+			<RepairCmd>&quot;Yandex.exe&quot; --silent --codezero --do-not-launch-browser</RepairCmd>
+			<Force32bit>False</Force32bit>
+			<InstallationBehaviorType>InstallForUser</InstallationBehaviorType>
+			<!--<LogonReqType>WhetherOrNotUserLoggedOn</LogonReqType>-->
+			<UninstallOption>NoneRequired</UninstallOption>
+			<UserInteractionMode>Hidden</UserInteractionMode>
+			<ReqUserInteraction>False</ReqUserInteraction>
+			<EstRuntimeMins>10</EstRuntimeMins>
+			<MaxRuntimeMins>60</MaxRuntimeMins>
+			<RebootBehavior>BasedOnExitCode</RebootBehavior>
+			<DetectionMethodType>CustomScript</DetectionMethodType>
+			<ScriptLanguage>PowerShell</ScriptLanguage>
+			<DetectionMethod>[version] $NeedVersion = &quot;$Version&quot;
+$DetectPath = &quot;$($Env:LOCALAPPDATA)\Yandex\YandexBrowser\Application\*.*.*.*\Installer\setup.exe&quot;
+$SetupFiles = @(Get-Item $DetectPath -ErrorAction 0)
+if ($SetupFiles) {
+	# Get latest installed version
+	[version] $InstalledVersion = Split-Path (Split-Path $SetupFiles.DirectoryName -Parent -ErrorAction 0) -Leaf -ErrorAction 0 | 
+		Sort-Object {$_ -as [version]} | Select-Object -Last 1
+	# Return true if &quot;$InstalledVersion -ge $NeedVersion&quot;
+	return $($InstalledVersion -ge $NeedVersion)
+}
+			</DetectionMethod>
+			<RequirementsRules>
+				<RequirementsRule>
+					<RequirementsRuleType>Existential</RequirementsRuleType>
+					<RequirementsRuleValue>
+						<RuleValue>True</RuleValue>
+					</RequirementsRuleValue>
+					<RequirementsRuleGlobalCondition>AutoPackage - OSArchitecture x64</RequirementsRuleGlobalCondition>
+				</RequirementsRule>
+			</RequirementsRules>
+		</DeploymentType>
+	</DeploymentTypes>
+	<Distribution>
+		<DistributeContent>True</DistributeContent>
+	</Distribution>
+	<Supersedence>
+		<Supersedence>True</Supersedence>
+		<Uninstall>False</Uninstall>
+		<CleanupSuperseded>True</CleanupSuperseded>
+		<KeepSuperseded>2</KeepSuperseded>
+	</Supersedence>
+	<Deployment>
+		<DeploySoftware>True</DeploySoftware>
+		<Purpose>Available</Purpose>
+		<AllowRepair>True</AllowRepair>
+	</Deployment>
+</ApplicationDef>
