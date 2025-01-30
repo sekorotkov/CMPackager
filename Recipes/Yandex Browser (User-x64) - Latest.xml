@@ -7,7 +7,7 @@
 		<AdminDescription>CMPackager build</AdminDescription>
 		<AutoInstall>True</AutoInstall>
 		<UserDocumentation>https://yandex.ru/support/browser/</UserDocumentation>
-		<OptionalReference>https://yndx-infrawin.gitlab.yandexcloud.net/INFRAWIN/infrawin_automation_scripts/-/tree/master/SCCM/CMPackager/Recipes</OptionalReference>
+		<OptionalReference>https://github.com/sekorotkov/CMPackager/tree/main/Recipes</OptionalReference>
 		<!-- LinkText - [String] Specifies a description that appears in the Application Catalog with a hyperlink to additional information or documentation for the application. -->
 		<!-- PrivacyUrl - [String] Hyperlink, in URI format, to privacy information about the application. -->
 		<!-- Owner - [String] Owner for Application -->
